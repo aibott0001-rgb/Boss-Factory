@@ -1,8 +1,5 @@
 # 04_AI_ORCHESTRATION_LOGIC.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## The Omni-Router Decision Tree
 1. **Input Received:** Analyze task type (Code, Text, Image, Analysis).
 2. **Context Size Check:** 

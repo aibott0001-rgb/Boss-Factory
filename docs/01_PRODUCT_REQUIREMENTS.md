@@ -1,8 +1,5 @@
 # 01_PRODUCT_REQUIREMENTS.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## 1. Core Mandates
 - **Zero-Cost Operation:** System MUST operate on $0 fixed monthly cost using free tiers only.
 - **Omni-Presence:** MUST function identically on Web, iOS, Android, Linux, Windows, macOS.

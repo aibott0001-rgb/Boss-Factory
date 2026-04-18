@@ -1,8 +1,5 @@
 # 10_SECURITY_PROTOCOLS.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## Access Control
 - **IP Whitelisting:** Admin dashboard accessible ONLY from pre-approved IPs.
 - **Biometric Auth:** Required for mobile app access.

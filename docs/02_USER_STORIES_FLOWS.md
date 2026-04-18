@@ -1,8 +1,5 @@
 # 02_USER_STORIES_FLOWS.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## Story 1: The "Spark" (Idea Capture)
 **As** the CEO, **I want** to speak a voice note on my phone while walking, **so that** I capture an idea instantly.
 - **Flow:** Mobile App → Mic Button → Whisper API → Transcription → Brain Dump (Inbox) → Notification Sent.
@@ -13,4 +10,5 @@
 - **Flow:** Dashboard → Select Template → Click Deploy → CFO checks limits → Builder clones repo → Deploys to Vercel → Connects Stripe → Status = Live.
 
 ## Story 3: The "Handoff" (Context Switching)
-**As** an AI Agent, **I want** to read the State Kernel before starting, **so that** I dont
+**As** an AI Agent, **I want** to read the State Kernel before starting, **so that** I don't repeat work.
+- **Flow:** Agent Wakeup → Read `11_PROGRESS_STATE_KERNEL.md` → Parse `current_task` → Execute → Update State → Log to `13_EXECUTION_LOG_AUDIT.md`.

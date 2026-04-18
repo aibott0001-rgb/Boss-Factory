@@ -1,8 +1,5 @@
 # 07_VAULT_TEMPLATE_SPECS.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## Template Structure (JSON)
 {
   "id": "tmpl_001",

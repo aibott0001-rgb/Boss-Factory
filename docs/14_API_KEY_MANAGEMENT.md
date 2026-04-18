@@ -1,18 +1,15 @@
 # 14_API_KEY_MANAGEMENT.md (KeyMaster)
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## 1. Objective
-Provide a zero-maintenance, self-healing system for managing all external API credentials.
+Zero-maintenance, self-healing system for managing all external API credentials.
 
 ## 2. Architecture
-- **Secure Storage:** AES-256 encryption at rest in Supabase.
-- **Heartbeat Monitor:** Cron job tests every 5 mins (Ping/Models.list).
-- **Smart Router:** Load balances across multiple keys; auto-failover on 401/429.
+- **Secure Storage:** AES-256 encryption at rest.
+- **Heartbeat Monitor:** Cron job tests keys every 5 mins.
+- **Smart Router:** Load balances across multiple keys; auto-failover.
 
 ## 3. User Interface
-- **List View:** Provider, Masked Key, Status (🟢/🔴), Quota Used.
+- **List View:** Provider, Status, Quota, Last Tested.
 - **Actions:** Add, Pause, Resume, Delete, Test Now.
 
 ## 4. Supported Providers

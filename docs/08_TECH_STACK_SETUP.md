@@ -1,8 +1,5 @@
 # 08_TECH_STACK_SETUP.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## Prerequisites
 - Node.js 20+, pnpm, Rust (for Tauri), Expo CLI.
 

@@ -1,8 +1,5 @@
 # 09_DEPLOYMENT_RUNBOOK.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
 ## Web (Vercel)
 1. Push to `main` branch.
 2. Vercel auto-deploys to `boss-factory.vercel.app`.

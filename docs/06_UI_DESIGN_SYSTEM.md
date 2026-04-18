@@ -1,9 +1,6 @@
 # 06_UI_DESIGN_SYSTEM.md
 
-**Status:** 🟢 Defined
-**Version:** 1.0 (Genesis)
-
-## Visual Language: "Glass & Neon"
+## Color Palette
 - **Background:** Dark Slate (#0f172a) / Light Gray (#f8fafc)
 - **Primary:** Neon Blue (#3b82f6) - Actions, Links
 - **Success:** Neon Green (#10b981) - Profit, Live Status
@@ -15,7 +12,6 @@
 - **VentureCard:** Displays name, revenue, status, "Pause/Stop" buttons.
 - **AgentChat:** Chat interface with avatar, typing indicator, markdown support.
 - **ProfitTicker:** Animated number counter for real-time revenue.
-- **KeyVault:** Table showing API key status, usage, and "Test" button.
 
 ## Responsive Rules
 - **Mobile:** Single column, bottom nav, large touch targets.
