@@ -1,16 +1,23 @@
-# 05_DATA_SCHEMA_REGISTRY.md
+# 05_DATA_SCHEMA_REGISTRY
 
-## Core Tables (Supabase)
-- `users`: id, email, settings_json, api_keys (encrypted)
-- `brain_dumps`: id, user_id, content_text, media_url, status (inbox/live), tags[]
-- `ventures`: id, name, template_id, status, revenue_total, cost_total
-- `agents`: id, name, role, current_task_id, logs_json
-- `templates`: id, name, category, tech_stack, deploy_script_url
-- `financial_logs`: id, venture_id, amount, type (income/expense), timestamp
-- `api_credentials`: id, provider, encrypted_key, status, quota_used, last_heartbeat
+**Status:** 🟡 Pending Full Content  
+**Version:** 1.0 (Genesis)  
+**Owner:** The Sole CEO
 
-## External API Integrations (The Lake)
-- **Finance:** CoinGecko (Crypto), Yahoo Finance (Stocks)
-- **Media:** TMDB (Movies), Unsplash (Images)
-- **Geo:** OpenStreetMap (Maps), OpenWeather (Weather)
-- **AI:** Groq, Gemini, HuggingFace, Cloudflare
+## 1. Overview
+This document defines the specifications for 05_DATA_SCHEMA_REGISTRY within the Boss Factory ecosystem.
+
+## 2. Core Logic
+*To be populated by AI Agent in Phase 1.*
+
+## 3. Technical Specifications
+*To be populated by AI Agent in Phase 1.*
+
+## 4. Implementation Status
+- [ ] Logic Defined
+- [ ] Specs Written
+- [ ] Code Implemented
+- [ ] Tested
+
+---
+*Part of the Boss Factory Genesis Protocol. Do not delete.*
