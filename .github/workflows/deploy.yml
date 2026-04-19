@@ -80,5 +80,3 @@ jobs:
           echo "⏰ Timeout waiting for deployment"
           exit 1
 
-name: Install jq
-  run: sudo apt-get install -y jq
