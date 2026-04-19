@@ -1,0 +1,12 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["fra1"],
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@boss_factory_supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@boss_factory_supabase_anon",
+    "NEXT_PUBLIC_ENCRYPTION_KEY": "@boss_factory_encryption_key"
+  }
+}
