@@ -8,4 +8,3 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-// Force build trigger Sun Apr 19 09:48:21 PM EET 2026
