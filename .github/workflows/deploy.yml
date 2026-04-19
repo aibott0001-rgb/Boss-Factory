@@ -17,32 +17,33 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci --only=production  # Cleaner install for production
 
-      - name: Build Project (with Env Vars)
-        id: build
+      - name: Build Project
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: |
-          echo "🏗️ Running build with environment variables..."
+          echo "Building with environment variables..."
           npm run build
 
       - name: Deploy to Vercel
-        id: deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          # Pass env vars to preview/prod deployment too
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: |
           npm install -g vercel@latest
+          
+          # Pull project config
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          
+          # Build using Vercel's logic (ensures compatibility)
           vercel build --prod --token=$VERCEL_TOKEN
+          
+          # Deploy the prebuilt output
           vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
