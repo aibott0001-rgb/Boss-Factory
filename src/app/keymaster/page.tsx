@@ -1,160 +1,143 @@
 "use client";
+import { useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { encrypt } from '@/lib/crypto';
+import { Shield, Plus, CheckCircle, AlertCircle, Loader2, Zap } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import { encryptKey } from '../../lib/crypto';
-import { Key, Plus, Trash2, Activity, ShieldCheck, AlertCircle } from 'lucide-react';
+export default function KeyMasterPage() {
+  const [provider, setProvider] = useState('Groq');
+  const [apiKey, setApiKey] = useState('');
+  const [status, setStatus] = useState<'idle'|'testing'|'success'|'error'>('idle');
+  const [message, setMessage] = useState('');
 
-interface ApiKey {
-  id: string;
-  provider: string;
-  status: string;
-  last_tested_at: string | null;
-}
-
-export default function KeyMasterDashboard() {
-  const [keys, setKeys] = useState<ApiKey[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newProvider, setNewProvider] = useState('groq');
-  const [newKey, setNewKey] = useState('');
-  const [message, setMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
-
-  useEffect(() => {
-    fetchKeys();
-  }, []);
-
-  async function fetchKeys() {
-    const { data, error } = await supabase.from('api_credentials').select('*').order('created_at', { ascending: false });
-    if (error) console.error('Error fetching keys:', error);
-    else setKeys(data || []);
-    setLoading(false);
-  }
-
-  async function handleAddKey(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newKey) return;
-
-    const encrypted = encryptKey(newKey);
+  const testKey = async () => {
+    if (!apiKey) return;
+    setStatus('testing');
+    setMessage('Testing connectivity...');
     
+    // Simple fetch test for Groq (can be expanded for other providers)
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/models', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      
+      if (response.ok) {
+        setStatus('success');
+        setMessage('✅ Key is valid! Ready to save.');
+        return true;
+      } else {
+        setStatus('error');
+        setMessage('❌ Invalid key or network error.');
+        return false;
+      }
+    } catch (err) {
+      setStatus('error');
+      setMessage('❌ Network error. Check console.');
+      return false;
+    }
+  };
+
+  const handleSave = async () => {
+    if (!apiKey) return;
+    
+    // Auto-test before save if not already tested successfully
+    if (status !== 'success') {
+      const isValid = await testKey();
+      if (!isValid) return;
+    }
+
+    const encrypted = encrypt(apiKey);
     const { error } = await supabase.from('api_credentials').insert([{
-      provider: newProvider,
+      provider,
       encrypted_key: encrypted,
-      status: 'active',
-      user_id: (await supabase.auth.getUser()).data.user?.id // Requires auth or use anon insert if RLS allows
+      name: `${provider} Key`,
+      key_type: 'llm',
+      status: 'active'
     }]);
 
     if (error) {
-      setMessage({ type: 'error', text: 'Failed to save key. Check RLS policies.' });
+      setStatus('error');
+      setMessage('❌ Save failed: ' + error.message);
     } else {
-      setMessage({ type: 'success', text: 'Key encrypted and saved successfully!' });
-      setNewKey('');
-      fetchKeys();
+      setStatus('success');
+      setMessage('✅ Key saved & encrypted securely!');
+      setApiKey('');
     }
-    setTimeout(() => setMessage(null), 3000);
-  }
-
-  async function testKey(id: string, provider: string) {
-    setMessage({ type: 'success', text: `Testing ${provider}... (Mock Test)` });
-    // Real implementation would call an edge function to test the key securely
-    setTimeout(() => setMessage({ type: 'success', text: `${provider} is active!` }), 1500);
-  }
+    setTimeout(() => setStatus('idle'), 5000);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-mono">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8 border-b border-slate-800 pb-4">
-          <h1 className="text-3xl font-bold text-blue-400 flex items-center gap-3">
-            <ShieldCheck className="w-8 h-8" />
-            KeyMaster™ Vault
-          </h1>
-          <p className="text-slate-400 mt-2">Securely manage, encrypt, and monitor your AI API keys.</p>
-        </header>
-
-        {message && (
-          <div className={`p-4 mb-6 rounded border ${message.type === 'success' ? 'bg-green-900/20 border-green-500' : 'bg-red-900/20 border-red-500'}`}>
-            {message.text}
-          </div>
-        )}
-
-        {/* Add New Key Form */}
-        <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-8">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Plus className="w-5 h-5" /> Add New Credential
-          </h2>
-          <form onSubmit={handleAddKey} className="flex gap-4 flex-col md:flex-row">
-            <select 
-              value={newProvider} 
-              onChange={(e) => setNewProvider(e.target.value)}
-              className="bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 focus:border-blue-500 outline-none"
-            >
-              <option value="groq">Groq</option>
-              <option value="gemini">Google Gemini</option>
-              <option value="openai">OpenAI</option>
-              <option value="anthropic">Anthropic</option>
-              <option value="huggingface">Hugging Face</option>
-            </select>
-            <input 
-              type="password" 
-              placeholder="Paste API Key (sk-...)" 
-              value={newKey}
-              onChange={(e) => setNewKey(e.target.value)}
-              className="flex-1 bg-slate-950 border border-slate-700 rounded p-2 text-slate-200 focus:border-blue-500 outline-none"
-            />
-            <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold transition">
-              Encrypt & Save
-            </button>
-          </form>
-        </div>
-
-        {/* Keys List */}
-        <div className="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
-          <div className="p-4 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Activity className="w-5 h-5" /> Active Credentials
-            </h2>
-            <span className="text-xs text-slate-500">AES-256 Encrypted at Rest</span>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 flex items-center gap-3">
+          <Shield className="text-blue-500"/> KeyMaster Vault
+        </h1>
+        <p className="text-slate-400 mb-8">Securely manage your AI intelligence keys with AES-256 encryption.</p>
+        
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-lg">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Plus className="text-blue-400"/> Add New Key</h2>
           
-          {loading ? (
-            <div className="p-8 text-center text-slate-500">Loading vault...</div>
-          ) : keys.length === 0 ? (
-            <div className="p-8 text-center text-slate-500 flex flex-col items-center gap-2">
-              <AlertCircle className="w-8 h-8 opacity-50" />
-              No keys found. Add your first key above.
+          <div className="space-y-4">
+            <div>
+              <label className="block text-slate-400 text-sm mb-1">Provider</label>
+              <select value={provider} onChange={(e) => setProvider(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <option>Groq</option>
+                <option>Google Gemini</option>
+                <option>OpenAI</option>
+                <option>Hugging Face</option>
+              </select>
             </div>
-          ) : (
-            <table className="w-full text-left">
-              <thead className="bg-slate-950 text-slate-400 text-xs uppercase">
-                <tr>
-                  <th className="p-4">Provider</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4">Last Tested</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {keys.map((key) => (
-                  <tr key={key.id} className="hover:bg-slate-800/50 transition">
-                    <td className="p-4 font-bold text-blue-300 capitalize">{key.provider}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${key.status === 'active' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
-                        {key.status.toUpperCase()}
-                      </span>
-                    </td>
-                    <td className="p-4 text-slate-400 text-sm">{key.last_tested_at ? new Date(key.last_tested_at).toLocaleDateString() : 'Never'}</td>
-                    <td className="p-4 text-right flex justify-end gap-2">
-                      <button onClick={() => testKey(key.id, key.provider)} className="p-2 hover:bg-slate-700 rounded text-slate-400 hover:text-white" title="Test Connection">
-                        <Activity className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 hover:bg-red-900/50 rounded text-slate-400 hover:text-red-400" title="Delete">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+            
+            <div>
+              <label className="block text-slate-400 text-sm mb-1">API Key</label>
+              <input 
+                type="password" 
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-..."
+                className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white font-mono focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            
+            <div className="flex gap-3 pt-2">
+              <button 
+                onClick={testKey}
+                disabled={!apiKey || status === 'testing'}
+                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-bold rounded-lg flex items-center justify-center gap-2 transition-all"
+              >
+                {status === 'testing' ? <Loader2 className="animate-spin" size={20}/> : <Zap size={20}/>}
+                {status === 'testing' ? 'Testing...' : 'Test Key'}
+              </button>
+              
+              <button 
+                onClick={handleSave}
+                disabled={!apiKey || status === 'testing'}
+                className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 text-white font-bold rounded-lg shadow-lg shadow-blue-600/30 transition-all"
+              >
+                Save Securely
+              </button>
+            </div>
+            
+            {message && (
+              <div className={`p-4 rounded-lg flex items-start gap-3 ${
+                status === 'success' ? 'bg-green-900/30 text-green-400 border border-green-900' :
+                status === 'error' ? 'bg-red-900/30 text-red-400 border border-red-900' :
+                'bg-blue-900/30 text-blue-400 border border-blue-900'
+              }`}>
+                {status === 'success' ? <CheckCircle className="shrink-0" size={20}/> :
+                 status === 'error' ? <AlertCircle className="shrink-0" size={20}/> :
+                 <Loader2 className="shrink-0 animate-spin" size={20}/>}
+                <span className="text-sm">{message}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="mt-8 bg-slate-900/50 border border-slate-800 rounded-xl p-6 text-center">
+          <Shield className="w-16 h-16 text-blue-500/30 mx-auto mb-4"/>
+          <h3 className="text-lg font-bold text-white mb-2">Military-Grade Security</h3>
+          <p className="text-slate-400 text-sm">Keys are encrypted locally with AES-256 before being sent to the database. Even admins cannot see your raw keys.</p>
         </div>
       </div>
     </div>
