@@ -1,160 +1,103 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+"use client";
+import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { encryptKey } from '@/lib/crypto';
-import { Key, Plus, Trash2, RefreshCw, CheckCircle, XCircle, Shield } from 'lucide-react';
+import { Key, Shield, Plus, Activity, CheckCircle, AlertCircle } from 'lucide-react';
 
-export default function KeyMasterPage() {
-  const [provider, setProvider] = useState('groq');
+export default function KeyMaster() {
+  const [provider, setProvider] = useState('Groq');
   const [apiKey, setApiKey] = useState('');
-  const [keys, setKeys] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<{id: string, status: string} | null>(null);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  useEffect(() => {
-    fetchKeys();
-  }, []);
-
-  async function fetchKeys() {
-    const { data, error } = await supabase.from('api_credentials').select('*').order('created_at', { ascending: false });
-    if (data) setKeys(data);
-  }
-
-  async function handleSave() {
-    if (!apiKey) return alert('Please enter a key');
-    setLoading(true);
-    
+  const handleSave = async () => {
     const encrypted = encryptKey(apiKey);
-    
-    const { error } = await supabase.from('api_credentials').insert({
+    const { error } = await supabase.from('api_credentials').insert([{
       provider,
       encrypted_key: encrypted,
-      status: 'active',
-      last_tested_at: new Date().toISOString()
-    });
+      name: `${provider} Key`,
+      key_type: 'llm',
+      status: 'active'
+    }]);
 
-    if (error) alert('Error saving: ' + error.message);
-    else {
-      alert('Key saved & encrypted successfully!');
-      setApiKey('');
-      fetchKeys();
-    }
-    setLoading(false);
-  }
-
-  async function testKey(id: string, providerName: string) {
-    setStatus({ id, status: 'testing' });
-    // Simulate test (Real implementation would call your API route)
-    setTimeout(() => {
-      setStatus({ id, status: 'success' });
-      alert(`Test successful for ${providerName}!`);
-    }, 1500);
-  }
-
-  async function deleteKey(id: string) {
-    if(!confirm('Delete this key?')) return;
-    await supabase.from('api_credentials').delete().eq('id', id);
-    fetchKeys();
-  }
+    setStatus(error ? 'error' : 'success');
+    if (!error) setApiKey('');
+    setTimeout(() => setStatus('idle'), 3000);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-mono">
-      <div className="max-w-4xl mx-auto">
-        <header className="mb-8 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-3 mb-2">
-            <Shield className="w-8 h-8 text-emerald-400" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-              KeyMaster Vault
-            </h1>
-          </div>
-          <p className="text-slate-400">Securely manage, encrypt, and test your AI API keys.</p>
-        </header>
+    <div className="min-h-screen p-8 max-w-4xl mx-auto">
+      <div className="text-center mb-12 animate-float">
+        <h1 className="text-5xl font-black neon-text mb-4">KeyMaster Vault</h1>
+        <p className="text-slate-400">Securely Manage Your AI Intelligence Keys</p>
+      </div>
 
-        {/* Input Section */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-8 shadow-lg">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-cyan-400" /> Add New Key
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Input Form */}
+        <div className="glass-card rounded-2xl p-8">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <Plus className="text-blue-400" /> Add New Key
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm text-slate-400 mb-1">Provider</label>
+              <label className="block text-slate-400 text-sm mb-2">Provider</label>
               <select 
                 value={provider} 
                 onChange={(e) => setProvider(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-700 rounded p-2 focus:border-cyan-400 outline-none"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none"
               >
-                <option value="groq">Groq (Llama 3)</option>
-                <option value="gemini">Google Gemini</option>
-                <option value="openai">OpenAI</option>
-                <option value="anthropic">Anthropic</option>
-                <option value="huggingface">Hugging Face</option>
+                <option>Groq</option>
+                <option>Google Gemini</option>
+                <option>OpenAI</option>
+                <option>Hugging Face</option>
               </select>
             </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm text-slate-400 mb-1">API Key</label>
+
+            <div>
+              <label className="block text-slate-400 text-sm mb-2">API Key</label>
               <input 
                 type="password" 
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder="sk-..."
-                className="w-full bg-slate-950 border border-slate-700 rounded p-2 focus:border-cyan-400 outline-none font-mono text-sm"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none font-mono"
               />
             </div>
+
+            <button 
+              onClick={handleSave}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all transform hover:scale-[1.02]"
+            >
+              Encrypt & Save
+            </button>
+
+            {status === 'success' && (
+              <div className="flex items-center gap-2 text-green-400 bg-green-500/10 p-3 rounded-lg">
+                <CheckCircle size={18} /> Key Saved Securely!
+              </div>
+            )}
+            {status === 'error' && (
+              <div className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg">
+                <AlertCircle size={18} /> Save Failed
+              </div>
+            )}
           </div>
-          <button 
-            onClick={handleSave}
-            disabled={loading}
-            className="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded font-semibold transition flex items-center gap-2 disabled:opacity-50"
-          >
-            {loading ? <RefreshCw className="w-4 h-4 animate-spin"/> : <Shield className="w-4 h-4"/>}
-            {loading ? 'Encrypting...' : 'Save & Encrypt'}
-          </button>
         </div>
 
-        {/* List Section */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 shadow-lg">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Key className="w-5 h-5 text-cyan-400" /> Active Keys
-          </h2>
-          {keys.length === 0 ? (
-            <p className="text-slate-500 italic">No keys found. Add one above.</p>
-          ) : (
-            <div className="space-y-3">
-              {keys.map((key) => (
-                <div key={key.id} className="flex items-center justify-between bg-slate-950 p-4 rounded border border-slate-800">
-                  <div>
-                    <div className="font-bold text-cyan-400 uppercase">{key.provider}</div>
-                    <div className="text-xs text-slate-500 font-mono mt-1">
-                      {key.encrypted_key.substring(0, 20)}... (Encrypted)
-                    </div>
-                    <div className="text-xs text-slate-400 mt-1">
-                      Status: <span className={key.status === 'active' ? 'text-emerald-400' : 'text-red-400'}>{key.status}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => testKey(key.id, key.provider)}
-                      className="p-2 bg-slate-800 hover:bg-cyan-900 text-cyan-400 rounded transition"
-                      title="Test Connection"
-                    >
-                      {status?.id === key.id && status?.status === 'testing' ? 
-                        <RefreshCw className="w-4 h-4 animate-spin"/> : 
-                        <CheckCircle className="w-4 h-4"/>
-                      }
-                    </button>
-                    <button 
-                      onClick={() => deleteKey(key.id)}
-                      className="p-2 bg-slate-800 hover:bg-red-900 text-red-400 rounded transition"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4"/>
-                    </button>
-                  </div>
-                </div>
-              ))}
+        {/* Status Panel */}
+        <div className="glass-card rounded-2xl p-8 flex flex-col justify-center items-center text-center">
+          <Shield className="w-24 h-24 text-blue-500/50 mb-6 animate-pulse" />
+          <h3 className="text-2xl font-bold text-white mb-2">Military-Grade Encryption</h3>
+          <p className="text-slate-400 mb-6">Your keys are encrypted with AES-256 before leaving your browser.</p>
+          <div className="w-full bg-slate-900/50 rounded-xl p-4">
+            <div className="flex justify-between text-sm text-slate-400 mb-2">
+              <span>System Status</span>
+              <span className="text-green-400">Operational</span>
             </div>
-          )}
+            <div className="w-full bg-slate-800 rounded-full h-2">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full w-full"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
