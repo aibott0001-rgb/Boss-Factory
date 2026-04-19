@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: "Boss Factory",
-  description: "Autonomous Wealth Engine",
-};
+  title: 'Boss Factory | KeyMaster Vault',
+  description: 'Autonomous API Key Management System',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="min-h-screen bg-background antialiased">
+        <div className="fixed inset-0 bg-gradient-to-br from-background via-surface to-background opacity-50 pointer-events-none" />
+        {children}
+      </body>
     </html>
-  );
+  )
 }
