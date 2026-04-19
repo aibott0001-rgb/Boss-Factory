@@ -1,5 +1,4 @@
-// Use require for CommonJS compatibility with crypto-js
-const CryptoJS = require('crypto-js');
+import CryptoJS from 'crypto-js';
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'boss-factory-genesis-key-change-in-prod';
 
