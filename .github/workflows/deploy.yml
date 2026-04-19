@@ -21,25 +21,22 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # 🔥 CRITICAL FIX: Pass Env Vars explicitly to the build step
-      - name: Build Project
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
-        run: npm run build
-
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          # Also pass env vars to deploy step just in case
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: |
           npm install -g vercel@latest
+          
+          # 1. Pull latest project settings
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          
+          # 2. Build the project (Env vars are injected here)
           vercel build --prod --token=$VERCEL_TOKEN
-          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+          
+          # 3. DEPLOY WITH FORCE FLAG (Bypasses optimization errors)
+          vercel deploy --prebuilt --prod --force --token=$VERCEL_TOKEN
