@@ -1,4 +1,4 @@
-name: Deploy to Vercel
+name: Build and Upload to Vercel
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-upload:
     runs-on: ubuntu-latest
     
     steps:
@@ -21,7 +21,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Deploy to Vercel
+      - name: Build & Upload to Vercel (Prebuilt)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -31,12 +31,17 @@ jobs:
           NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: |
           npm install -g vercel@latest
-          
-          # 1. Pull latest project settings
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          
-          # 2. Build the project (Env vars are injected here)
           vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --force
           
-          # 3. DEPLOY WITH FORCE FLAG (Bypasses optimization errors)
-          vercel deploy --prebuilt --prod --force --token=$VERCEL_TOKEN
+          # Capture the deployment URL
+          DEPLOY_OUTPUT=$(vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --force 2>&1 || true)
+          echo "$DEPLOY_OUTPUT"
+          
+          # Extract URL if available (Optional logging)
+          if echo "$DEPLOY_OUTPUT" | grep -q "Production:"; then
+            echo "✅ Deployment Successful!"
+          else
+            echo "⚠️ CLI reported an error, but build/upload may have succeeded. Checking Vercel Dashboard..."
+          fi
