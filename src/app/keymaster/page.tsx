@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { encryptKey } from '@/lib/crypto';
+import { supabase } from '../../lib/supabaseClient';
+import { encryptKey } from '../../lib/crypto';
 import { Key, Plus, Trash2, Activity, ShieldCheck, AlertCircle } from 'lucide-react';
 
 interface ApiKey {

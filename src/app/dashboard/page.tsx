@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabaseClient'
-import { encrypt } from '@/lib/crypto'
+import { supabase } from '../../lib/supabaseClient'
+import { encrypt } from '../../lib/crypto'
 
 interface ApiKey {
   id: string
