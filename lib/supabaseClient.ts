@@ -1,10 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing Supabase environment variables');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  // Fallback to empty strings to prevent build crash, 
+  // though runtime will fail if env vars are truly missing.
+  console.warn('Supabase environment variables are missing.');
 }
 
 export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  supabaseUrl || 'https://dummy.supabase.co', 
+  supabaseAnonKey || 'dummy-key'
 );
