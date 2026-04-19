@@ -13,6 +13,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
       - name: Install Dependencies
         run: npm install
 
@@ -23,14 +28,57 @@ jobs:
           NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: npm run build
 
-      - name: Deploy to Vercel
-        uses: vercel/actions@v1
-        with:
-          prod: true
+      - name: Deploy to Vercel (via API)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          # 1. Create a new deployment
+          echo "🚀 Creating deployment..."
+          DEPLOY_RESPONSE=$(curl -s -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"projectId\": \"$VERCEL_PROJECT_ID\",
+              \"orgId\": \"$VERCEL_ORG_ID\",
+              \"target\": \"production\",
+              \"name\": \"boss-factory\"
+            }")
+          
+          DEPLOYMENT_ID=$(echo $DEPLOY_RESPONSE | jq -r '.id')
+          DEPLOY_URL=$(echo $DEPLOY_RESPONSE | jq -r '.url')
+          
+          if [ "$DEPLOYMENT_ID" == "null" ] || [ -z "$DEPLOYMENT_ID" ]; then
+            echo "❌ Failed to create deployment"
+            echo "Response: $DEPLOY_RESPONSE"
+            exit 1
+          fi
+          
+          echo "✅ Deployment created: $DEPLOYMENT_ID"
+          echo "🌐 Preview URL: https://$DEPLOY_URL"
+          
+          # 2. Wait for build to complete (Polling)
+          echo "⏳ Waiting for build to complete..."
+          for i in {1..30}; do
+            sleep 10
+            STATUS_RESPONSE=$(curl -s "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN")
+            
+            STATE=$(echo $STATUS_RESPONSE | jq -r '.state')
+            echo "   Current state: $STATE"
+            
+            if [ "$STATE" == "READY" ]; then
+              echo "✅ Deployment successful!"
+              exit 0
+            elif [ "$STATE" == "ERROR" ] || [ "$STATE" == "CANCELED" ]; then
+              echo "❌ Deployment failed with state: $STATE"
+              exit 1
+            fi
+          done
+          
+          echo "⏰ Timeout waiting for deployment"
+          exit 1
+
+name: Install jq
+  run: sudo apt-get install -y jq
