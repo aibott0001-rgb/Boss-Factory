@@ -98,3 +98,22 @@
 The `scripts/guardian.sh` automatically checks this file for error patterns. If a known error (e.g., "Missing Supabase environment variables") is detected, it will suggest the stored fix immediately.
 
 **End of Forensics Log.**
+
+---
+
+## [ID: ERR-DEPLOY-001] Vercel Hobby Plan Private Repo Block
+- **Timestamp:** $(date)
+- **Category:** Infrastructure / Permissions
+- **Severity:** Critical (Blocked all deployments for hours)
+- **Context:** GitHub Actions built successfully but Vercel CLI returned "Unexpected error" or "Invalid request" during final deployment step.
+- **Error Message:** `Error: Unexpected error. Please try again later.` / `Your Vercel CLI version is outdated` (False positives)
+- **Root Cause:** Vercel Hobby Plan does not support automatic deployments from GitHub Actions for **Private** repositories. It requires a Pro plan for private repo collaboration.
+- **Resolution Status:** ✅ **FIXED**
+- **Fix Applied:** Changed GitHub Repository visibility from **Private** to **Public**.
+  - Command: N/A (Done via GitHub Settings UI)
+  - Result: Immediate successful deployment on next push.
+- **Prevention:** 
+  - If using Vercel Hobby Plan, ALWAYS keep repo Public.
+  - If Repo must be Private, upgrade Vercel to Pro ($20/mo) OR use Vercel Dashboard manual imports instead of GitHub Actions.
+- **Lesson Learned:** The simplest solution is often the right one. Don't over-engineer CLI fixes when it's a permission tier issue.
+
