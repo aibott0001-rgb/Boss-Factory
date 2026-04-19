@@ -1,4 +1,4 @@
-name: Vercel Production Deployment
+name: Deploy to Vercel
 
 on:
   push:
@@ -11,44 +11,38 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Debug Secrets (Masked)
+      - name: Build Project (with Env Vars)
+        id: build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
         run: |
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
-            echo "::error::VERCEL_TOKEN is empty or missing. Check spelling in Settings > Secrets."
-            exit 1
-          else
-            echo "✅ VERCEL_TOKEN found (length: ${#VERCEL_TOKEN})"
-          fi
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Build Project
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          echo "🏗️ Running build with environment variables..."
+          npm run build
 
       - name: Deploy to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        id: deploy
         env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          # Pass env vars to preview/prod deployment too
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
+        run: |
+          npm install -g vercel@latest
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
