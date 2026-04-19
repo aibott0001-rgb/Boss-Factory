@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabaseClient';
 import { encryptKey } from '@/lib/crypto';
 import { Key, Shield, Plus, Activity, CheckCircle, AlertCircle } from 'lucide-react';

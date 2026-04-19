@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabaseClient';
 import { Rocket, TrendingUp, Clock, DollarSign, Search, Filter, Zap } from 'lucide-react';
 

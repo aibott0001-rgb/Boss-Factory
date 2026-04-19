@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+export const dynamic = 'force-dynamic'
 import { supabase } from '@/lib/supabaseClient';
 import { Brain } from 'lucide-react';
 
