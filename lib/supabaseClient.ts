@@ -5,12 +5,11 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   // Fallback to empty strings to prevent build crash, 
-  // but app will fail at runtime if env vars are missing.
-  // This allows the BUILD to pass so we can debug env vars in Vercel.
-  console.warn("Warning: Supabase env vars missing during build.");
+  // but app will not work until env vars are set.
+  console.warn('Missing Supabase Env Vars');
 }
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseAnonKey || 'placeholder-key'
+  supabaseUrl || 'https://empty.supabase.co', 
+  supabaseAnonKey || 'empty'
 );
