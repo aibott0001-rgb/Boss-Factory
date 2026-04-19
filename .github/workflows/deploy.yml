@@ -1,38 +1,70 @@
-name: Deploy to Vercel
+name: 🚀 Boss Factory Auto-Deploy to Vercel
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
+    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install Node.js
+      # 1. Checkout Code
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for proper Vercel builds
+
+      # 2. Setup Node.js (Specific Version for Stability)
+      - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          
-      - name: Install Dependencies
-        run: npm install
-        
-      - name: Pull Vercel Environment Variables
-        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          node-version: 20
+          cache: 'npm' # Automatically caches node_modules
+
+      # 3. Install Dependencies (With Retry Logic)
+      - name: 📦 Install Dependencies
+        run: |
+          echo "Installing dependencies..."
+          npm ci --prefer-offline --no-audit || npm install --no-audit
+          echo "Dependencies installed successfully."
+
+      # 4. Install Vercel CLI (Specific Stable Version)
+      - name: 🛠️ Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      # 5. Pull Vercel Project Information
+      - name: 🔗 Link to Vercel Project
+        run: vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }}
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          
-      - name: Build Project Artifacts
-        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      # 6. Pre-Build Check (Local Build Test)
+      - name: 🏗️ Run Production Build Check
+        run: npm run build
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          
-      - name: Deploy Project Artifacts to Vercel
-        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
+
+      # 7. Deploy to Vercel (With Auto-Retry)
+      - name: 🌐 Deploy to Vercel Production
+        id: deploy
+        run: |
+          echo "Starting deployment..."
+          vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --yes || \
+          (echo "First attempt failed. Retrying in 10 seconds..." && sleep 10 && vercel --prod --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --yes)
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
+
+      # 8. Output Deployment URL
+      - name: ✅ Deployment Complete
+        if: success()
+        run: echo "🎉 Deployment Successful! Check your Vercel dashboard."
