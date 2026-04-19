@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { Brain, Plus } from 'lucide-react';
 
 export default function NeuralPage() {
   const [input, setInput] = useState('');
@@ -25,15 +24,15 @@ export default function NeuralPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
-      <h1 className="text-4xl font-bold mb-6 text-blue-400 flex items-center gap-2"><Brain/> Neural Console</h1>
+      <h1 className="text-4xl font-bold mb-6 text-blue-400">Neural Console</h1>
       <textarea 
-        className="w-full h-32 bg-slate-900 border border-slate-800 rounded p-4 text-white mb-4 focus:ring-2 focus:ring-blue-500 outline-none"
+        className="w-full h-32 bg-slate-900 border border-slate-800 rounded p-4 text-white mb-4"
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Type your idea..."
       />
-      <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold flex items-center gap-2">
-        <Plus size={20}/> Capture Idea
+      <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold">
+        Capture Idea
       </button>
       <div className="mt-8 space-y-4">
         <h2 className="text-2xl font-semibold text-slate-400">Recent Ideas</h2>
