@@ -22,23 +22,14 @@
       "static/chunks/main-app-6854e49a3652fa87.js",
       "static/chunks/app/dashboard/page-07c4e09e7525f1f1.js"
     ],
-    "/keymaster/page": [
+    "/vault/page": [
       "static/chunks/webpack-82b2ba201d35e58a.js",
       "static/chunks/fd9d1056-f5ca11604835b0e5.js",
       "static/chunks/23-72ccbb43045dd2eb.js",
       "static/chunks/main-app-6854e49a3652fa87.js",
       "static/chunks/44530001-68266de4aa45c799.js",
       "static/chunks/730-b875fbe79b3c6e50.js",
-      "static/chunks/app/keymaster/page-b79b8907dfada643.js"
-    ],
-    "/neural/page": [
-      "static/chunks/webpack-82b2ba201d35e58a.js",
-      "static/chunks/fd9d1056-f5ca11604835b0e5.js",
-      "static/chunks/23-72ccbb43045dd2eb.js",
-      "static/chunks/main-app-6854e49a3652fa87.js",
-      "static/chunks/44530001-68266de4aa45c799.js",
-      "static/chunks/730-b875fbe79b3c6e50.js",
-      "static/chunks/app/neural/page-11987d591c3dc5b2.js"
+      "static/chunks/app/vault/page-076eb4af10ca41aa.js"
     ],
     "/page": [
       "static/chunks/webpack-82b2ba201d35e58a.js",
@@ -47,14 +38,23 @@
       "static/chunks/main-app-6854e49a3652fa87.js",
       "static/chunks/app/page-ebcf1be6e52a063f.js"
     ],
-    "/vault/page": [
+    "/keymaster/page": [
       "static/chunks/webpack-82b2ba201d35e58a.js",
       "static/chunks/fd9d1056-f5ca11604835b0e5.js",
       "static/chunks/23-72ccbb43045dd2eb.js",
       "static/chunks/main-app-6854e49a3652fa87.js",
       "static/chunks/44530001-68266de4aa45c799.js",
       "static/chunks/730-b875fbe79b3c6e50.js",
-      "static/chunks/app/vault/page-ce738a6e19302233.js"
+      "static/chunks/app/keymaster/page-495622f1ca0d074c.js"
+    ],
+    "/neural/page": [
+      "static/chunks/webpack-82b2ba201d35e58a.js",
+      "static/chunks/fd9d1056-f5ca11604835b0e5.js",
+      "static/chunks/23-72ccbb43045dd2eb.js",
+      "static/chunks/main-app-6854e49a3652fa87.js",
+      "static/chunks/44530001-68266de4aa45c799.js",
+      "static/chunks/730-b875fbe79b3c6e50.js",
+      "static/chunks/app/neural/page-febcee1f4f3327a0.js"
     ]
   }
 }
