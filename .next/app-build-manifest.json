@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/dashboard/page": [
+    "/neural/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/page.js"
+      "static/chunks/app/neural/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
