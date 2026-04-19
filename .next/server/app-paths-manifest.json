@@ -1,7 +1,7 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/vault/page": "app/vault/page.js",
+  "/keymaster/page": "app/keymaster/page.js",
   "/neural/page": "app/neural/page.js",
-  "/keymaster/page": "app/keymaster/page.js"
+  "/vault/page": "app/vault/page.js"
 }

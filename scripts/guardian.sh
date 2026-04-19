@@ -13,6 +13,7 @@ TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
 LOG_FILE="docs/13_EXECUTION_LOG_AUDIT.md"
 STATE_FILE="docs/11_PROGRESS_STATE_KERNEL.md"
 ERROR_FILE="docs/17_ERROR_FORENSICS_LOG.md"
+touch "$ERROR_FILE" # Ensure file exists
 BUILD_LOG="/tmp/boss_factory_build.log"
 ERROR_ID="ERR-$(date +%s)"
 
