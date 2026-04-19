@@ -17,19 +17,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          cache: 'npm'
+          # Disable cache to force fresh install
+          cache: '' 
 
-      - name: Install Dependencies
-        run: npm ci --only=production  # Cleaner install for production
+      - name: Install Dependencies (Fresh)
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Build Project
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_ENCRYPTION_KEY: ${{ secrets.NEXT_PUBLIC_ENCRYPTION_KEY }}
-        run: |
-          echo "Building with environment variables..."
-          npm run build
+        run: npm run build
 
       - name: Deploy to Vercel
         env:
@@ -38,12 +39,6 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm install -g vercel@latest
-          
-          # Pull project config
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          
-          # Build using Vercel's logic (ensures compatibility)
           vercel build --prod --token=$VERCEL_TOKEN
-          
-          # Deploy the prebuilt output
           vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
