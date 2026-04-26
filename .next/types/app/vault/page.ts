@@ -1,8 +1,8 @@
-// File: /home/mo/boss-factory/src/app/neural/page.tsx
-import * as entry from '../../../../src/app/neural/page.js'
+// File: /home/mo/boss-factory/src/app/vault/page.tsx
+import * as entry from '../../../../src/app/vault/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../../src/app/neural/page.js')
+type TEntry = typeof import('../../../../src/app/vault/page.js')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{

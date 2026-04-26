@@ -1,4 +1,4 @@
 {
-  "/neural/page": "app/neural/page.js",
-  "/api/analyze-idea/route": "app/api/analyze-idea/route.js"
+  "/vault/page": "app/vault/page.js",
+  "/api/deploy-venture/route": "app/api/deploy-venture/route.js"
 }
