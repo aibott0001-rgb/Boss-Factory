@@ -1,23 +1,29 @@
-# 04_AI_ORCHESTRATION_LOGIC
+# 🧠 AI ORCHESTRATION LOGIC
+### *Cloud-Native Intelligence Strategy*
 
-**Status:** 🟡 Pending Full Content  
-**Version:** 1.0 (Genesis)  
-**Owner:** The Sole CEO
-
-## 1. Overview
-This document defines the specifications for 04_AI_ORCHESTRATION_LOGIC within the Boss Factory ecosystem.
-
-## 2. Core Logic
-*To be populated by AI Agent in Phase 1.*
-
-## 3. Technical Specifications
-*To be populated by AI Agent in Phase 1.*
-
-## 4. Implementation Status
-- [ ] Logic Defined
-- [ ] Specs Written
-- [ ] Code Implemented
-- [ ] Tested
+**Version:** 4.0  
+**Status:** 🟢 **ACTIVE**
 
 ---
-*Part of the Boss Factory Genesis Protocol. Do not delete.*
+
+## 1. THE BRAIN: GROQ CLOUD
+
+We use **Groq Cloud** as our primary AI engine for production tasks.
+
+**Why Groq?**
+*   **Speed:** LPU (Language Processing Unit) technology delivers tokens at 500+ tokens/sec.
+*   **Cost:** Generous free tier for Llama 3.1 70B and Mixtral 8x7B.
+*   **Reliability:** 99.9% uptime SLA, unlike local hardware.
+*   **Simplicity:** OpenAI-compatible API (easy integration).
+
+**Models Used:**
+1.  **Llama 3.1 70B:** General reasoning, idea scoring, coding.
+2.  **Mixtral 8x7B:** Creative writing, marketing copy.
+
+---
+
+## 2. ORCHESTRATION FLOW
+
+### Scenario: Idea Analysis
+1.  **Prompt Engineering:**
+    

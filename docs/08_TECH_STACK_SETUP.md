@@ -1,23 +1,24 @@
-# 08_TECH_STACK_SETUP
+# 🛠️ TECH STACK SETUP
+### *Cloud-Native Environment Configuration*
 
-**Status:** 🟡 Pending Full Content  
-**Version:** 1.0 (Genesis)  
-**Owner:** The Sole CEO
-
-## 1. Overview
-This document defines the specifications for 08_TECH_STACK_SETUP within the Boss Factory ecosystem.
-
-## 2. Core Logic
-*To be populated by AI Agent in Phase 1.*
-
-## 3. Technical Specifications
-*To be populated by AI Agent in Phase 1.*
-
-## 4. Implementation Status
-- [ ] Logic Defined
-- [ ] Specs Written
-- [ ] Code Implemented
-- [ ] Tested
+**Version:** 2.0 (Cloud-Only)  
+**Status:** 🟢 **ACTIVE**
 
 ---
-*Part of the Boss Factory Genesis Protocol. Do not delete.*
+
+## 1. PREREQUISITES
+- Node.js 20+ installed locally.
+- GitHub Account.
+- Vercel Account (linked to GitHub).
+- Supabase Account (Free Tier).
+- **Groq Cloud Account** (Free Tier).
+
+---
+
+## 2. LOCAL DEVELOPMENT SETUP
+
+### Step A: Clone & Install
+```bash
+git clone https://github.com/aibott0001-rgb/Boss-Factory.git
+cd Boss-Factory
+npm install
