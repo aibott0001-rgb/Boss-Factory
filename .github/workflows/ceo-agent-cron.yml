@@ -1,0 +1,44 @@
+name: 🤖 CEO Agent (Autonomous Scout)
+
+on:
+  # Run every hour automatically
+  schedule:
+    - cron: '0 * * * *' 
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  scan-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run CEO Agent
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GITHUB_OWNER: ${{ secrets.GITHUB_OWNER }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx tsx src/lib/agents/ceo-agent.ts
+
+      - name: Commit Changes (if any new repos created)
+        run: |
+          git config --global user.name 'Boss Factory CEO'
+          git config --global user.email 'ceo@bossfactory.ai'
+          git add .
+          git commit -m "bot: CEO Agent Auto-Deployment" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
