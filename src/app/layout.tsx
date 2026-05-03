@@ -1,22 +1,28 @@
-import './globals.css'
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Boss Factory | KeyMaster Vault',
-  description: 'Autonomous API Key Management System',
-}
+  title: "Boss Factory | Autonomous Wealth Engine",
+  description: "Build, Deploy, and Scale AI Ventures Automatically",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-background antialiased">
-        <div className="fixed inset-0 bg-gradient-to-br from-background via-surface to-background opacity-50 pointer-events-none" />
-        {children}
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-slate-950 text-slate-100 antialiased min-h-screen`}>
+        <Navbar />
+        <main className="pt-16"> {/* Padding top for fixed navbar */}
+          {children}
+        </main>
       </body>
     </html>
-  )
+  );
 }

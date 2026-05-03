@@ -1,130 +1,97 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabaseClient'
-import { encrypt } from '../../lib/crypto'
+// ... (Imports remain the same)
 
-interface ApiKey {
-  id: string
-  provider: string
-  status: string
-  last_tested_at: string | null
-}
-
-export default function KeyMasterDashboard() {
-  const [keys, setKeys] = useState<ApiKey[]>([])
-  const [provider, setProvider] = useState('groq')
-  const [apiKeyValue, setApiKeyValue] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    fetchKeys()
-  }, [])
-
-  const fetchKeys = async () => {
-    // In a real app, we would filter by user_id from auth
-    const { data, error } = await supabase.from('api_credentials').select('*')
-    if (data) setKeys(data)
-  }
-
-  const handleAddKey = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    
-    const encryptedKey = encrypt(apiKeyValue)
-    
-    const { error } = await supabase.from('api_credentials').insert({
-      provider,
-      encrypted_key: encryptedKey,
-      status: 'active',
-      last_tested_at: new Date().toISOString()
-    })
-
-    if (!error) {
-      alert('Key added and encrypted successfully!')
-      setApiKeyValue('')
-      fetchKeys()
-    } else {
-      alert('Error adding key: ' + error.message)
-    }
-    setLoading(false)
-  }
+export default function Dashboard() {
+  // ... (Your existing state/logic remains)
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-8">
-      <h1 className="text-3xl font-bold mb-8 text-blue-400">🔑 KeyMaster Command Center</h1>
-      
-      {/* Add Key Form */}
-      <div className="bg-slate-800 p-6 rounded-lg mb-8 border border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Add New API Key</h2>
-        <form onSubmit={handleAddKey} className="space-y-4">
+    <div className="min-h-screen bg-slate-950 p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* HEADER: High Contrast & Bold */}
+        <div className="flex justify-between items-end border-b border-slate-800 pb-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Provider</label>
-            <select 
-              value={provider} 
-              onChange={(e) => setProvider(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white"
-            >
-              <option value="groq">Groq</option>
-              <option value="gemini">Google Gemini</option>
-              <option value="openai">OpenAI</option>
-              <option value="anthropic">Anthropic</option>
-            </select>
+            <h1 className="text-5xl font-black text-white mb-2">
+              Command <span className="text-gradient">Center</span>
+            </h1>
+            <p className="text-slate-400 text-lg font-medium">
+              Welcome back, CEO. System is <span className="text-green-400 font-bold">Operational</span>.
+            </p>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">API Key Value</label>
-            <input 
-              type="password" 
-              value={apiKeyValue}
-              onChange={(e) => setApiKeyValue(e.target.value)}
-              placeholder="sk-..."
-              className="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white"
-              required
-            />
-          </div>
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-          >
-            {loading ? 'Encrypting & Saving...' : 'Save Key'}
+          <button className="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
+            <Brain size={20} /> New Idea
           </button>
-        </form>
-      </div>
+        </div>
 
-      {/* Keys List */}
-      <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
-        <h2 className="text-xl font-semibold mb-4">Active Keys</h2>
-        {keys.length === 0 ? (
-          <p className="text-slate-400">No keys found. Add one above!</p>
-        ) : (
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-slate-700">
-                <th className="pb-2">Provider</th>
-                <th className="pb-2">Status</th>
-                <th className="pb-2">Last Tested</th>
-                <th className="pb-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {keys.map((key) => (
-                <tr key={key.id} className="border-b border-slate-700/50">
-                  <td className="py-3 capitalize">{key.provider}</td>
-                  <td className="py-3">
-                    <span className={`px-2 py-1 rounded text-xs ${key.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
-                      {key.status}
-                    </span>
-                  </td>
-                  <td className="py-3 text-slate-400 text-sm">{key.last_tested_at ? new Date(key.last_tested_at).toLocaleDateString() : 'Never'}</td>
-                  <td className="py-3">
-                    <button className="text-blue-400 hover:text-blue-300 text-sm">Test</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        {/* STATS GRID: Clear Hover States */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Example Stat Card - Apply 'interactive-card' class */}
+          <div className="interactive-card p-6 rounded-2xl relative overflow-hidden group">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400 group-hover:bg-blue-500/20 transition-colors">
+                <Brain size={24} />
+              </div>
+              <span className="text-xs font-bold bg-green-500/10 text-green-400 px-2 py-1 rounded">+12%</span>
+            </div>
+            <h3 className="text-slate-400 font-semibold text-sm uppercase tracking-wider mb-1">Total Ideas</h3>
+            <p className="text-4xl font-black text-white">{stats.totalIdeas}</p>
+          </div>
+
+          {/* Repeat for other stats using 'interactive-card' class */}
+          {/* ... */}
+        </div>
+
+        {/* MAIN CONTENT AREA */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Left Column (Wide) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Section Header */}
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
+                Recent Neural Inputs
+              </h2>
+              <button className="text-blue-400 font-semibold hover:text-blue-300 transition-colors">View All</button>
+            </div>
+
+            {/* List of Ideas - Use 'interactive-card' for each item */}
+            <div className="space-y-4">
+               {/* Example Item */}
+               <div className="interactive-card p-5 rounded-xl flex items-center justify-between group">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-3 h-3 rounded-full ${score >= 80 ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-slate-500'}`} />
+                    <div>
+                      <p className="text-white font-bold text-lg group-hover:text-blue-400 transition-colors">{idea.content}</p>
+                      <p className="text-slate-500 text-sm">{new Date(idea.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <div className={`px-4 py-2 rounded-lg font-bold ${score >= 80 ? 'bg-green-500/10 text-green-400' : 'bg-slate-800 text-slate-400'}`}>
+                    Score: {score}
+                  </div>
+               </div>
+            </div>
+          </div>
+
+          {/* Right Column (Sidebar) */}
+          <div className="space-y-6">
+             {/* Secret Manager Card - Clear Call to Action */}
+             <div className="interactive-card p-6 rounded-2xl border-l-4 border-l-purple-500">
+                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                  <Lock size={20} className="text-purple-400"/> Secret Manager
+                </h3>
+                <p className="text-slate-400 text-sm mb-6">Rotate API keys and sync to Vercel instantly.</p>
+                <button 
+                  onClick={() => router.push('/admin/secrets')}
+                  className="w-full py-3 bg-slate-800 hover:bg-purple-600 text-white font-bold rounded-lg transition-all duration-300 border border-slate-700 hover:border-purple-500"
+                >
+                  Manage Secrets
+                </button>
+             </div>
+          </div>
+
+        </div>
       </div>
     </div>
-  )
+  );
 }
