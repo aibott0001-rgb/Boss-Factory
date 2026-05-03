@@ -56,6 +56,18 @@
 *   **Function:** Autonomous agents (CEO, Builder, CFO) that execute tasks based on analyzed ideas.
 *   **Engine:** Groq Cloud LPU for rapid decision loops.
 *   **Status:** ⚪ **Pending**
+### 5. SECURITY & SECRETS (Self-Healing Architecture)
+**Philosophy:** "Zero Manual Rotation. Centralized Control."
+
+- **Storage:** All API keys (Groq, Supabase, Vercel, GitHub) are stored **encrypted** in the `app_secrets` Supabase table.
+- **Management:** A dedicated **Admin Dashboard** (`/admin/secrets`) allows the CEO to rotate, add, or revoke keys instantly via UI.
+- **Sync Engine:** When a key is updated in the Dashboard:
+  1. It is encrypted (AES-256).
+  2. The **Secret Sync Agent** automatically pushes it to **Vercel Environment Variables** (via Vercel API).
+  3. It updates **GitHub Secrets** (via GitHub API) for Actions.
+  4. Local development environments are notified to reload.
+- **Health Monitor:** A background cron job tests all keys every 15 minutes. If a key fails (401/403), the CEO is alerted immediately via email/Discord.
+- **No .env Files in Prod:** Production runs entirely on injected secrets from the secure store.
 
 ---
 

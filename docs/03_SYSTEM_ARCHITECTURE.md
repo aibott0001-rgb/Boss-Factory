@@ -74,3 +74,23 @@ graph TD
     Supabase -->|Returns Data| Vercel
     Vercel -->|UI Update| User
 This architecture ensures zero dependency on local hardware, guaranteeing 24/7 global availability.
+
+---
+
+## 7. SELF-HEALING KEY MANAGEMENT
+To ensure 100% uptime and eliminate manual DevOps:
+
+### The Flow
+1. **CEO Action:** Updates "Groq API Key" in `/admin/secrets` dashboard.
+2. **Encryption:** Browser encrypts key with Master Password before sending.
+3. **Storage:** Saved to `public.app_secrets` table (Row Level Security enabled).
+4. **Propagation:**
+   - **Vercel:** Serverless function calls `POST /v9/projects/{id}/env` to update production vars.
+   - **GitHub:** Serverless function calls `PATCH /repos/{owner}/{repo}/actions/secrets/{name}` to update CI/CD vars.
+5. **Verification:** System runs a test call (e.g., `groq.chat.completions.create`) to confirm validity.
+6. **Feedback:** UI shows "✅ Synced & Verified" instantly.
+
+### Components
+- **Table:** `app_secrets` (id, key_name, encrypted_value, last_rotated, status).
+- **API:** `/api/admin/sync-secrets` (Protected by Admin Auth).
+- **Monitor:** `health-check-cron.yml` (Runs every 15 mins).
