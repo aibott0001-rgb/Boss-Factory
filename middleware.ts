@@ -1,9 +1,12 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,42 +14,77 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         get(name: string) {
-          return req.cookies.get(name)?.value;
+          return request.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
-          req.cookies.set({ name, value, ...options });
-          res.cookies.set({ name, value, ...options });
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          });
         },
-        remove(name: string, options: any) {
-          req.cookies.set({ name, value: '', ...options });
-          res.cookies.set({ name, value: '', ...options });
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          });
         },
       },
     }
   );
 
-  // FIX: Correct destructuring syntax here
-  const { data: { session } } = await supabase.auth.getSession();
+  // Refresh session if expired
+  await supabase.auth.getSession();
 
-  const { pathname } = req.nextUrl;
+  const { pathname } = request.nextUrl;
+
+  // 1. Define Protected Routes
+  const protectedRoutes = ['/dashboard', '/neural', '/vault', '/admin', '/keymaster', '/settings'];
   
-  // Routes that require login
-  const protectedRoutes = ['/dashboard', '/vault', '/neural', '/admin', '/keymaster', '/settings'];
+  // 2. Check if user is trying to access a protected route
   const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
 
-  // Redirect to login if not authenticated
-  if (isProtected && !session) {
-    const loginUrl = new URL('/login', req.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+  if (isProtected) {
+    const {  { session } } = await supabase.auth.getSession();
+    
+    // If NO session, redirect to login
+    if (!session) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
-  // Redirect to dashboard if already logged in and visiting auth pages
-  if ((pathname === '/login' || pathname === '/signup') && session) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
+  // 3. If user is logged in and tries to visit auth pages, send to dashboard
+  if ((pathname === '/login' || pathname === '/signup') ) {
+     const {  { session } } = await supabase.auth.getSession();
+     if (session) {
+       return NextResponse.redirect(new URL('/dashboard', request.url));
+     }
   }
 
-  return res;
+  return response;
 }
 
 export const config = {

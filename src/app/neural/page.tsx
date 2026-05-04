@@ -43,16 +43,16 @@ export default function NeuralConsole() {
   // 1. Auth & Load Data on Mount
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      // We trust the Middleware to have redirected us if not logged in.
+      // We just try to get the user. If it fails silently, we show loading.
+      const {  { user } } = await supabase.auth.getUser();
       
-      if (!user) {
-        // If not logged in, redirect to login immediately
-        router.push('/login?redirect=/neural');
-        return;
-      }
-
-      setUser(user);
-      await loadIdeas(user.id);
+      if (user) {
+        setUser(user);
+        await loadIdeas(user.id);
+      } 
+      // If no user, we assume Middleware is redirecting us, so we do nothing here.
+      
       setLoading(false);
     };
     init();
