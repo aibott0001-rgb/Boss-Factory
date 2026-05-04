@@ -3,118 +3,74 @@
 @tailwind utilities;
 
 /* 
-  THEME VARIABLES 
-  These switch automatically based on the .dark class on the <html> tag 
+  DEFINING VARIABLES FOR BOTH MODES 
+  Light Mode: White BG, Black Text
+  Dark Mode: Black BG, White Text
 */
 :root {
-  /* Light Mode Defaults */
-  --background: #ffffff;
-  --foreground: #0f172a; /* Slate 900 (Black-ish) */
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #2563eb; /* Blue 600 */
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9; /* Slate 100 */
-  --secondary-foreground: #1e293b;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0; /* Slate 200 */
-  --input: #e2e8f0;
-  --ring: #2563eb;
+  /* Default to Dark Mode variables if no class is present */
+  --background: 0 0% 2%;       /* Very dark slate (#020617) */
+  --foreground: 0 0% 98%;      /* White (#f8fafc) */
+  --card: 0 0% 4%;             /* Slightly lighter dark */
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 4%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 217 91% 60%;      /* Blue */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 265 89% 70%;    /* Purple */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 215 20% 15%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 215 20% 15%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 215 20% 15%;
+  --input: 215 20% 15%;
+  --ring: 217 91% 60%;
 }
 
-.dark {
-  /* Dark Mode Overrides */
-  --background: #020617; /* Slate 950 */
-  --foreground: #f8fafc; /* Slate 50 (White-ish) */
-  --card: #0f172a; /* Slate 900 */
-  --card-foreground: #f8fafc;
-  --popover: #0f172a;
-  --popover-foreground: #f8fafc;
-  --primary: #3b82f6; /* Blue 500 */
-  --primary-foreground: #ffffff;
-  --secondary: #1e293b; /* Slate 800 */
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #1e293b;
-  --accent-foreground: #f8fafc;
-  --destructive: #7f1d1d;
-  --destructive-foreground: #f8fafc;
-  --border: #1e293b; /* Slate 800 */
-  --input: #1e293b;
-  --ring: #3b82f6;
+/* LIGHT MODE OVERRIDES */
+.light {
+  --background: 0 0% 100%;     /* Pure White */
+  --foreground: 222 47% 11%;   /* Almost Black (#0f172a) */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 265 89% 70%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 210 40% 96%;        /* Light Gray */
+  --muted-foreground: 215 16% 47%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214 32% 91%;       /* Light Gray Border */
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;
 }
 
-/* GLOBAL APPLICATION */
+/* APPLY VARIABLES GLOBALLY */
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   transition: background-color 0.3s ease, color 0.3s ease;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Utility Classes using Variables */
-.bg-background { background-color: var(--background); }
-.text-foreground { color: var(--foreground); }
-.bg-card { background-color: var(--card); }
-.text-card-foreground { color: var(--card-foreground); }
-.border-border { border-color: var(--border); }
-.ring-ring { --tw-ring-color: var(--ring); }
+/* UTILITIES */
+.bg-background { background-color: hsl(var(--background)); }
+.text-foreground { color: hsl(var(--foreground)); }
+.bg-card { background-color: hsl(var(--card)); }
+.text-card-foreground { color: hsl(var(--card-foreground)); }
+.border-border { border-color: hsl(var(--border)); }
+.text-muted-foreground { color: hsl(var(--muted-foreground)); }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--background); 
-}
-::-webkit-scrollbar-thumb {
-  background: var(--muted-foreground); 
-  border-radius: 4px;
-  opacity: 0.5;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground); 
-}
-
-/* Glassmorphism Utilities */
-.glass {
-  background: rgba(var(--card), 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
-}
-
-.glass-card {
-  background: linear-gradient(145deg, rgba(var(--card), 0.6) 0%, rgba(var(--background), 0.8) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
-/* Text Gradient Utility */
-.text-gradient {
-  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Animations */
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: hsl(var(--background)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }

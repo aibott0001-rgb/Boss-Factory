@@ -17,11 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning is CRITICAL for theme switching
     <html lang="en" suppressHydrationWarning>
-        <body className={`min-h-screen bg-background text-foreground antialiased`}>
-        <ThemeProvider>
+      <body className={`${inter.className} bg-background text-foreground antialiased min-h-screen transition-colors duration-300`}>
+        <ThemeProvider defaultTheme="dark" storageKey="boss-factory">
           <Navbar />
-          <main className="pt-16 min-h-screen">
+          <main className="pt-16">
             {children}
           </main>
         </ThemeProvider>
@@ -29,4 +30,3 @@ export default function RootLayout({
     </html>
   );
 }
-
