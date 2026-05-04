@@ -26,3 +26,19 @@ export default function RootLayout({
     </html>
   );
 }
+
+// ... imports
+import { ThemeProvider } from "@/components/ThemeProvider";
+
+export default function RootLayout({ children }: ...) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider> {/* Add this */}
+           <Navbar />
+           <main className="pt-16">{children}</main>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
