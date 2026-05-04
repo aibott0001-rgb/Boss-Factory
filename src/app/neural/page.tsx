@@ -37,7 +37,7 @@ export default function NeuralConsole() {
   // 1. Check Auth & Load History on Mount
   useEffect(() => {
     const checkUser = async () => {
-      const {  { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
         loadHistory(user.id);
