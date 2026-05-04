@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Shield, Key, RefreshCw, Save, AlertCircle, CheckCircle, Loader2, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 
-// Define types
 interface SecretKey {
   id?: string;
-  name: string; // e.g., GROQ_API_KEY
-  value: string; // The actual secret
+  name: string;
+  value: string;
   description?: string;
   status?: 'active' | 'inactive' | 'error';
   last_synced_at?: string;
@@ -21,7 +20,6 @@ export default function AdminSecrets() {
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [showValues, setShowValues] = useState<Record<string, boolean>>({});
 
-  // Load existing keys from DB
   useEffect(() => {
     loadKeys();
   }, []);
@@ -58,15 +56,16 @@ export default function AdminSecrets() {
     setKeys(newKeys);
   };
 
-  const toggleVisibility = (name: string) => {
-    setShowValues(prev => ({ ...prev, [name]: !prev[name] }));
+  // FIX: Accept string OR number
+  const toggleVisibility = (identifier: string | number) => {
+    const key = String(identifier);
+    setShowValues(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleSync = async () => {
     setSyncing(true);
     setMessage(null);
 
-    // Validate inputs
     const validKeys = keys.filter(k => k.name.trim() !== '' && k.value.trim() !== '');
     if (validKeys.length === 0) {
       showMessage('error', 'Please add at least one valid key pair.');
@@ -75,7 +74,6 @@ export default function AdminSecrets() {
     }
 
     try {
-      // STRICT JSON FORMATTING
       const payload = {
         secrets: validKeys.map(k => ({
           name: k.name.trim(),
@@ -85,17 +83,12 @@ export default function AdminSecrets() {
         }))
       };
 
-      console.log('📡 Sending Payload:', payload);
-
       const response = await fetch('/api/admin/sync-secrets', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json' 
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      // Check if response is OK
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || `Server responded with ${response.status}`);
@@ -105,7 +98,6 @@ export default function AdminSecrets() {
       
       if (result.success) {
         showMessage('success', `✅ Synced ${result.synced_count} keys to Vercel & DB!`);
-        // Refresh list to get updated timestamps
         loadKeys();
       } else {
         throw new Error(result.error || 'Sync failed');
@@ -122,9 +114,8 @@ export default function AdminSecrets() {
   const handleTestConnection = async (keyName: string, keyValue: string) => {
     if (!keyValue) return showMessage('error', 'Enter a key value first');
     
-    showMessage('success', `Testing ${keyName}... (Check console for details)`);
+    showMessage('success', `Testing ${keyName}...`);
     
-    // Simple fetch test based on key name
     try {
       if (keyName.includes('GROQ')) {
         const res = await fetch('https://api.groq.com/openai/v1/models', {
@@ -132,12 +123,8 @@ export default function AdminSecrets() {
         });
         if (res.ok) showMessage('success', `✅ ${keyName} is valid!`);
         else throw new Error('Invalid Groq Key');
-      } else if (keyName.includes('SUPABASE')) {
-         // Supabase client is already initialized, so if we loaded this page, it's likely working.
-         // We can't easily test the anon key without a specific call, so we assume success if UI loaded.
-         showMessage('success', `✅ ${keyName} seems active (Page loaded successfully).`);
       } else {
-        showMessage('success', `⚠️ No auto-test available for ${keyName}, but saved.`);
+         showMessage('success', `⚠️ No auto-test for ${keyName}, but saved.`);
       }
     } catch (e: any) {
       showMessage('error', `❌ Test Failed: ${e.message}`);
@@ -145,16 +132,15 @@ export default function AdminSecrets() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 pt-24">
       <div className="max-w-5xl mx-auto">
         
-        {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 flex items-center gap-3">
               <Shield className="text-blue-500" /> Secret Manager
             </h1>
-            <p className="text-slate-400 mt-2">Manage, Rotate, and Sync API Keys across Cloud Platforms</p>
+            <p className="text-slate-400 mt-2">Manage, Rotate, and Sync API Keys</p>
           </div>
           <button 
             onClick={handleAddKey}
@@ -164,7 +150,6 @@ export default function AdminSecrets() {
           </button>
         </div>
 
-        {/* Notification */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 border ${
             message.type === 'success' ? 'bg-green-900/20 border-green-500/50 text-green-400' : 'bg-red-900/20 border-red-500/50 text-red-400'
@@ -174,10 +159,7 @@ export default function AdminSecrets() {
           </div>
         )}
 
-        {/* Main Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
-          
-          {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 bg-slate-950/50 border-b border-slate-800 text-xs font-bold text-slate-500 uppercase tracking-wider">
             <div className="col-span-3">Key Name</div>
             <div className="col-span-5">Value</div>
@@ -185,7 +167,6 @@ export default function AdminSecrets() {
             <div className="col-span-1"></div>
           </div>
 
-          {/* List */}
           <div className="divide-y divide-slate-800">
             {loading ? (
               <div className="p-8 text-center text-slate-500"><Loader2 className="animate-spin mx-auto mb-2" /> Loading...</div>
@@ -194,8 +175,6 @@ export default function AdminSecrets() {
             ) : (
               keys.map((key, idx) => (
                 <div key={idx} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-800/30 transition-colors">
-                  
-                  {/* Name Input */}
                   <div className="col-span-3">
                     <input 
                       type="text" 
@@ -206,10 +185,9 @@ export default function AdminSecrets() {
                     />
                   </div>
 
-                  {/* Value Input */}
                   <div className="col-span-5 relative">
                     <input 
-                      type={showValues[key.name || idx] ? 'text' : 'password'}
+                      type={showValues[String(key.name || idx)] ? 'text' : 'password'}
                       placeholder="sk-..."
                       value={key.value}
                       onChange={(e) => handleUpdateKey(idx, 'value', e.target.value)}
@@ -219,11 +197,10 @@ export default function AdminSecrets() {
                       onClick={() => toggleVisibility(key.name || idx)}
                       className="absolute right-2 top-2 text-slate-500 hover:text-white"
                     >
-                      {showValues[key.name || idx] ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showValues[String(key.name || idx)] ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
 
-                  {/* Status Badge */}
                   <div className="col-span-3">
                     {key.status === 'active' ? (
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold bg-green-900/30 text-green-400 border border-green-900">
@@ -241,18 +218,15 @@ export default function AdminSecrets() {
                     )}
                   </div>
 
-                  {/* Actions */}
                   <div className="col-span-1 flex justify-end gap-2">
                     <button 
                       onClick={() => handleTestConnection(key.name, key.value)}
-                      title="Test Connection"
                       className="p-2 text-blue-400 hover:bg-blue-900/30 rounded transition-colors"
                     >
                       <RefreshCw size={18} />
                     </button>
                     <button 
                       onClick={() => handleRemoveKey(idx)}
-                      title="Remove"
                       className="p-2 text-red-400 hover:bg-red-900/30 rounded transition-colors"
                     >
                       <Trash2 size={18} />
@@ -263,10 +237,9 @@ export default function AdminSecrets() {
             )}
           </div>
 
-          {/* Footer Actions */}
           <div className="p-4 bg-slate-950/50 border-t border-slate-800 flex justify-between items-center">
             <div className="text-sm text-slate-500">
-              Changes are encrypted before saving. Syncing pushes to Vercel Environment.
+              Changes are encrypted before saving.
             </div>
             <button 
               onClick={handleSync}
@@ -277,12 +250,6 @@ export default function AdminSecrets() {
               {syncing ? 'Syncing...' : 'Sync Secrets'}
             </button>
           </div>
-        </div>
-
-        {/* Info Box */}
-        <div className="mt-8 p-4 bg-blue-900/10 border border-blue-900/30 rounded-lg text-sm text-blue-200">
-          <strong>💡 Pro Tip:</strong> You can add any API key here (Groq, OpenAI, Anthropic, etc.). 
-          The system will automatically encrypt it and update your Vercel project environment variables upon sync.
         </div>
       </div>
     </div>
