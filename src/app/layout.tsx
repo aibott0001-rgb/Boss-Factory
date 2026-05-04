@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+        <body className={`min-h-screen bg-background text-foreground antialiased`}>
         <ThemeProvider>
           <Navbar />
           <main className="pt-16 min-h-screen">

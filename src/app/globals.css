@@ -3,141 +3,118 @@
 @tailwind utilities;
 
 /* 
-  DEFINING THEME VARIABLES 
-  Light Mode (Default) 
+  THEME VARIABLES 
+  These switch automatically based on the .dark class on the <html> tag 
 */
 :root {
+  /* Light Mode Defaults */
   --background: #ffffff;
-  --foreground: #020617; /* Slate 950 */
-  
+  --foreground: #0f172a; /* Slate 900 (Black-ish) */
   --card: #ffffff;
-  --card-foreground: #020617;
-  
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #020617;
-  
+  --popover-foreground: #0f172a;
   --primary: #2563eb; /* Blue 600 */
   --primary-foreground: #ffffff;
-  
   --secondary: #f1f5f9; /* Slate 100 */
-  --secondary-foreground: #0f172a;
-  
+  --secondary-foreground: #1e293b;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
-  
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  
-  --border: #e2e8f0;
+  --border: #e2e8f0; /* Slate 200 */
   --input: #e2e8f0;
   --ring: #2563eb;
 }
 
-/* Dark Mode Overrides */
 .dark {
+  /* Dark Mode Overrides */
   --background: #020617; /* Slate 950 */
-  --foreground: #f8fafc; /* Slate 50 */
-  
+  --foreground: #f8fafc; /* Slate 50 (White-ish) */
   --card: #0f172a; /* Slate 900 */
   --card-foreground: #f8fafc;
-  
   --popover: #0f172a;
   --popover-foreground: #f8fafc;
-  
   --primary: #3b82f6; /* Blue 500 */
   --primary-foreground: #ffffff;
-  
   --secondary: #1e293b; /* Slate 800 */
   --secondary-foreground: #f8fafc;
-  
   --muted: #1e293b;
   --muted-foreground: #94a3b8;
-  
   --accent: #1e293b;
   --accent-foreground: #f8fafc;
-  
   --destructive: #7f1d1d;
   --destructive-foreground: #f8fafc;
-  
-  --border: #1e293b;
+  --border: #1e293b; /* Slate 800 */
   --input: #1e293b;
   --ring: #3b82f6;
 }
 
-/* Base Styles */
+/* GLOBAL APPLICATION */
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Utility Classes using Variables */
+.bg-background { background-color: var(--background); }
+.text-foreground { color: var(--foreground); }
+.bg-card { background-color: var(--card); }
+.text-card-foreground { color: var(--card-foreground); }
+.border-border { border-color: var(--border); }
+.ring-ring { --tw-ring-color: var(--ring); }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--secondary); 
+  background: var(--background); 
 }
 ::-webkit-scrollbar-thumb {
   background: var(--muted-foreground); 
   border-radius: 4px;
+  opacity: 0.5;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary); 
+  background: var(--foreground); 
 }
 
 /* Glassmorphism Utilities */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(var(--card), 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark .glass {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.9) 100%);
+  background: linear-gradient(145deg, rgba(var(--card), 0.6) 0%, rgba(var(--background), 0.8) 100%);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-.dark .glass-card {
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.6) 0%, rgba(2, 6, 23, 0.8) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-}
-
-/* Gradient Text */
+/* Text Gradient Utility */
 .text-gradient {
-  background: linear-gradient(to right, #2563eb, #7c3aed, #db2777);
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 /* Animations */
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 10px rgba(37, 99, 235, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.animate-glow {
-  animation: pulse-glow 2s infinite;
-}
-
-/* Utility for smooth transitions */
-* {
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
 }
