@@ -43,7 +43,7 @@ export default function NeuralConsole() {
   // 1. Auth & Load Data
   useEffect(() => {
     const init = async () => {
-      const {  { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       if (user) {
         await loadIdeas(user.id);
