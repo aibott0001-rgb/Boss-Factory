@@ -38,6 +38,7 @@ export default function Navbar() {
     { href: '/vault', label: 'Vault', icon: Zap },
     { href: '/keymaster', label: 'Keys', icon: Key },
     { href: '/admin/secrets', label: 'Admin', icon: Shield },
+    { href: '/settings', label: 'Settings', icon: Shield }, 
   ];
 
   return (
