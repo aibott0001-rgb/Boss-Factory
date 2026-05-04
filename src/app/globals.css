@@ -2,123 +2,143 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Inter Font for Crisp Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-
+/* 
+  DEFINING THEME VARIABLES 
+  Light Mode (Default) 
+*/
 :root {
-  --background: #020617; /* Deep Slate 950 */
-  --foreground: #f8fafc; /* Bright Slate 50 */
+  --background: #ffffff;
+  --foreground: #020617; /* Slate 950 */
+  
+  --card: #ffffff;
+  --card-foreground: #020617;
+  
+  --popover: #ffffff;
+  --popover-foreground: #020617;
+  
+  --primary: #2563eb; /* Blue 600 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f1f5f9; /* Slate 100 */
+  --secondary-foreground: #0f172a;
+  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+}
+
+/* Dark Mode Overrides */
+.dark {
+  --background: #020617; /* Slate 950 */
+  --foreground: #f8fafc; /* Slate 50 */
+  
+  --card: #0f172a; /* Slate 900 */
+  --card-foreground: #f8fafc;
+  
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  
   --primary: #3b82f6; /* Blue 500 */
-  --primary-glow: rgba(59, 130, 246, 0.5);
-  --card-bg: rgba(30, 41, 59, 0.4);
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-hover-border: rgba(59, 130, 246, 0.5);
+  --primary-foreground: #ffffff;
+  
+  --secondary: #1e293b; /* Slate 800 */
+  --secondary-foreground: #f8fafc;
+  
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+  
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #3b82f6;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
+/* Base Styles */
 body {
+  background-color: var(--background);
   color: var(--foreground);
-  background: var(--background);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  /* Force crisp font rendering */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
   overflow-x: hidden;
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 25%);
-  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* --- TYPOGRAPHY FIXES --- */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 800; /* Extra Bold for impact */
-  letter-spacing: -0.02em; /* Tighter tracking for modern look */
-  line-height: 1.2;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--secondary); 
+}
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary); 
 }
 
-p {
-  font-weight: 400;
-  color: #cbd5e1; /* Slate 300 for better readability than pure white */
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-/* --- INTERACTIVE STATES (The "Alive" Feeling) --- */
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-/* Cards: Default State */
-.interactive-card {
-  background: var(--card-bg);
+.glass-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.9) 100%);
   backdrop-filter: blur(12px);
-  border: 1px solid var(--card-border);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
-/* Cards: HOVER State (Lifts up + Glows) */
-.interactive-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--card-hover-border);
-  box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
-  background: rgba(30, 41, 59, 0.6);
+.dark .glass-card {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.6) 0%, rgba(2, 6, 23, 0.8) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Cards: ACTIVE/CLICK State (Presses down) */
-.interactive-card:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px -4px rgba(59, 130, 246, 0.2);
-}
-
-/* Inputs: Default */
-.interactive-input {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--card-border);
-  color: white;
-  transition: all 0.2s ease;
-}
-
-/* Inputs: FOCUS State (Bright Blue Ring) */
-.interactive-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  background: rgba(15, 23, 42, 0.8);
-}
-
-/* Buttons: Primary */
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  font-weight: 700;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.5);
-  filter: brightness(1.1);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-/* Utilities */
+/* Gradient Text */
 .text-gradient {
-  background: linear-gradient(to right, #60a5fa, #a855f7, #ec4899);
+  background: linear-gradient(to right, #2563eb, #7c3aed, #db2777);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.glass-panel {
-  background: rgba(30, 41, 59, 0.3);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(37, 99, 235, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
+}
+
+.animate-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Utility for smooth transitions */
+* {
+  @apply border-border;
 }
