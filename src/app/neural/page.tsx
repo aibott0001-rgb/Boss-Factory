@@ -45,8 +45,11 @@ export default function NeuralConsole() {
     const init = async () => {
       // We trust the Middleware to have redirected us if not logged in.
       // We just try to get the user. If it fails silently, we show loading.
-      const {  { user } } = await supabase.auth.getUser();
-      
+// ❌ Wrong
+const { data: { user } } = await supabase.auth.getUser();
+
+// ✅ Correct
+const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
         await loadIdeas(user.id);
