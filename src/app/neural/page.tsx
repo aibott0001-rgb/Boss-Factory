@@ -2,29 +2,50 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { Brain, Send, Loader2, Zap, AlertCircle, CheckCircle, History } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { 
+  Brain, Zap, Send, Loader2, AlertCircle, CheckCircle, 
+  TrendingUp, BarChart3, History, Lock 
+} from 'lucide-react';
 
+// Initialize Supabase
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function NeuralConsole() {
-  const [idea, setIdea] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [history, setHistory] = useState<any[]>([]);
-  const [user, setUser] = useState<any>(null);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+interface IdeaRecord {
+  id: string;
+  idea_text: string;
+  ai_score?: number;
+  ai_verdict?: string;
+  ai_category?: string;
+  ai_reasoning?: string;
+  created_at: string;
+}
 
+export default function NeuralConsole() {
+  const router = useRouter();
+  const [idea, setIdea] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [history, setHistory] = useState<IdeaRecord[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // 1. Check Auth & Load History on Mount
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) loadHistory(user.id);
+    const checkUser = async () => {
+      const {  { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        loadHistory(user.id);
+      } else {
+        setUser(null);
+      }
     };
-    getUser();
+    checkUser();
   }, []);
 
   const loadHistory = async (userId: string) => {
@@ -38,56 +59,69 @@ export default function NeuralConsole() {
     if (!error && data) setHistory(data);
   };
 
+  // 2. Handle AI Analysis
   const handleAnalyze = async () => {
     if (!idea.trim()) return;
     if (!user) {
-      setMessage({ type: 'error', text: 'Please log in to save ideas.' });
+      setError("Please log in to use the Neural Console.");
+      setTimeout(() => router.push('/login'), 2000);
       return;
     }
 
-    setAnalyzing(true);
-    setResult(null);
-    setMessage(null);
+    setIsAnalyzing(true);
+    setError(null);
+    setSuccessMsg(null);
 
     try {
-      // 1. Call AI API
+      // Call our internal API route
       const response = await fetch('/api/analyze-idea', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idea }),
       });
 
-      if (!response.ok) throw new Error('AI Analysis failed');
-      
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Analysis failed');
+      }
+
       const analysis = await response.json();
 
-      // 2. Save to Database
-      const { data: savedData, error } = await supabase.from('brain_dumps').insert([{
-        user_id: user.id,
-        idea_text: idea,
-        ai_score: analysis.score,
-        ai_verdict: analysis.verdict,
-        ai_category: analysis.category,
-        ai_tags: analysis.tags,
-        ai_reasoning: analysis.reasoning,
-        status: 'analyzed'
-      }]).select().single();
-
-      if (error) throw error;
-
-      setResult(savedData);
-      setMessage({ type: 'success', text: 'Idea analyzed and saved!' });
-      setIdea('');
-      
-      // Refresh history
-      loadHistory(user.id);
+      // 3. Save to Database immediately after analysis
+      await saveIdea(idea, analysis);
 
     } catch (err: any) {
       console.error(err);
-      setMessage({ type: 'error', text: err.message || 'Analysis failed. Check console.' });
+      setError(err.message || "Failed to analyze idea. Check console.");
     } finally {
-      setAnalyzing(false);
+      setIsAnalyzing(false);
     }
+  };
+
+  // 3. Save to Supabase
+  const saveIdea = async (text: string, analysis: any) => {
+    setIsSaving(true);
+    const { error } = await supabase.from('brain_dumps').insert([{
+      user_id: user.id,
+      idea_text: text,
+      ai_score: analysis.score,
+      ai_verdict: analysis.verdict,
+      ai_category: analysis.category,
+      ai_tags: JSON.stringify(analysis.tags),
+      ai_reasoning: analysis.reasoning,
+      status: 'inbox'
+    }]);
+
+    if (error) throw error;
+
+    setSuccessMsg("Idea analyzed & saved successfully!");
+    setIdea(''); // Clear input
+    
+    // Refresh history
+    loadHistory(user.id);
+    
+    setTimeout(() => setSuccessMsg(null), 4000);
+    setIsSaving(false);
   };
 
   return (
@@ -96,123 +130,122 @@ export default function NeuralConsole() {
         
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-bold">
-            <Zap size={16} /> AI-Powered Idea Incubator
+          <div className="inline-flex items-center justify-center p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mb-2">
+            <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
-          <h1 className="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+          <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
             Neural Console
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Type your business idea below. Our AI will score it, analyze market potential, and give you a GO/NO-GO verdict instantly.
+          <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto">
+            Type your raw business idea below. Our AI will score it, analyze market fit, and save it to your vault.
           </p>
         </div>
 
-        {/* Input Area */}
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
-          <textarea
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-            placeholder="e.g., An Uber for dog walkers that uses AI to match pets with sitters based on personality..."
-            className="w-full h-40 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-lg resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-          />
-          <div className="mt-4 flex justify-between items-center">
-            <span className="text-sm text-slate-500">
-              {idea.length} chars
-            </span>
-            <button
-              onClick={handleAnalyze}
-              disabled={analyzing || !idea.trim()}
-              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all transform hover:scale-105 flex items-center gap-2"
-            >
-              {analyzing ? <Loader2 className="animate-spin" /> : <Brain />}
-              {analyzing ? 'Analyzing...' : 'Analyze Idea'}
-            </button>
+        {/* Input Card */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="p-6">
+            <textarea
+              value={idea}
+              onChange={(e) => setIdea(e.target.value)}
+              placeholder="E.g., An Uber for dog walkers that uses AI to match pets based on personality..."
+              className="w-full h-40 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-4 text-lg resize-none focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400"
+              disabled={isAnalyzing || isSaving}
+            />
+            
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-slate-500 flex items-center gap-2">
+                {user ? (
+                  <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                    <CheckCircle size={14} /> Logged in as {user.email?.split('@')[0]}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-red-500">
+                    <Lock size={14} /> Guest Mode (Login to save)
+                  </span>
+                )}
+              </div>
+
+              <button
+                onClick={handleAnalyze}
+                disabled={!idea.trim() || isAnalyzing || isSaving || !user}
+                className={`px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all transform hover:scale-105 ${
+                  !user 
+                    ? 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'
+                    : isAnalyzing 
+                      ? 'bg-blue-400 cursor-wait'
+                      : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-600/30'
+                }`}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="animate-spin" /> Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="fill-current" /> Analyze Idea
+                  </>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Status Messages */}
+          {(error || successMsg) && (
+            <div className={`px-6 py-4 border-t ${
+              error 
+                ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900 text-red-600 dark:text-red-400' 
+                : 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900 text-green-600 dark:text-green-400'
+            }`}>
+              <div className="flex items-center gap-3">
+                {error ? <AlertCircle /> : <CheckCircle />}
+                <p className="font-medium">{error || successMsg}</p>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Message Notification */}
-        {message && (
-          <div className={`p-4 rounded-xl flex items-center gap-3 border ${
-            message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-900 dark:text-green-400' 
-              : 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-900 dark:text-red-400'
-          }`}>
-            {message.type === 'success' ? <CheckCircle /> : <AlertCircle />}
-            {message.text}
-          </div>
-        )}
-
-        {/* Analysis Result */}
-        {result && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-fade-in-up">
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 flex justify-between items-center">
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <CheckCircle className="text-green-500" /> Analysis Result
-              </h3>
-              <span className={`px-4 py-1 rounded-full font-bold text-sm ${
-                result.ai_verdict === 'GO' 
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
-                  : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-              }`}>
-                {result.ai_verdict}
-              </span>
-            </div>
-            
-            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <div className="text-sm text-slate-500 mb-1">Profitability Score</div>
-                <div className="text-4xl font-black text-blue-600 dark:text-blue-400">{result.ai_score}/100</div>
-              </div>
-              <div>
-                <div className="text-sm text-slate-500 mb-1">Category</div>
-                <div className="text-xl font-bold">{result.ai_category}</div>
-              </div>
-              <div className="md:col-span-2">
-                <div className="text-sm text-slate-500 mb-2">Tags</div>
-                <div className="flex flex-wrap gap-2">
-                  {result.ai_tags?.map((tag: string, i: number) => (
-                    <span key={i} className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-sm font-medium">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <div className="text-sm text-slate-500 mb-2">AI Reasoning</div>
-                <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  {result.ai_reasoning}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* History */}
+        {/* History Section */}
         {history.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-xl font-bold flex items-center gap-2">
-              <History size={20} /> Recent Ideas
-            </h3>
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-bold">
+              <History size={16} /> Recent Ideas
+            </div>
+            
             <div className="grid gap-4">
               {history.map((item) => (
-                <div key={item.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                  <div className="flex-1">
-                    <div className="font-medium truncate">{item.idea_text}</div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Score: {item.ai_score || 'N/A'} • {new Date(item.created_at).toLocaleDateString()}
+                <div key={item.id} className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex gap-2">
+                      {item.ai_score && (
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          item.ai_score >= 80 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                          item.ai_score >= 50 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                          'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        }`}>
+                          Score: {item.ai_score}
+                        </span>
+                      )}
+                      {item.ai_verdict && (
+                        <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                          {item.ai_verdict}
+                        </span>
+                      )}
                     </div>
+                    <span className="text-xs text-slate-400">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    item.ai_verdict === 'GO' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-600'
-                  }`}>
-                    {item.ai_verdict || 'Pending'}
-                  </span>
+                  <p className="text-slate-800 dark:text-slate-200 font-medium mb-2">{item.idea_text}</p>
+                  {item.ai_reasoning && (
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+                      <span className="font-bold">AI Insight:</span> {item.ai_reasoning}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
