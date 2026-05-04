@@ -4,7 +4,7 @@ const [user, setUser] = useState<any>(null);
 // Add this useEffect to get user on load
 useEffect(() => {
   const getUser = async () => {
-    const {  { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
   };
   getUser();
