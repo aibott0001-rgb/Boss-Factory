@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
   const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
 
   if (isProtected) {
-    const {  { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     
     // If NO session, redirect to login
     if (!session) {
@@ -78,10 +78,10 @@ export async function middleware(request: NextRequest) {
 
   // 3. If user is logged in and tries to visit auth pages, send to dashboard
   if ((pathname === '/login' || pathname === '/signup') ) {
-     const {  { session } } = await supabase.auth.getSession();
-     if (session) {
-       return NextResponse.redirect(new URL('/dashboard', request.url));
-     }
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   return response;

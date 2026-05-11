@@ -41,7 +41,7 @@ interface Template {
 }
 
 const categories = ['All', 'SaaS', 'Content', 'E-commerce', 'Service'];
-const difficulties = ['All', 1, 2, 3, 4, 5];
+const difficulties = ['All', '1', '2', '3', '4', '5'];
 
 export default function TemplateGallery({ userId }: { userId: string }) {
   const [templates, setTemplates] = useState<Template[]>([]);

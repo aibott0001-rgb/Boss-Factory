@@ -97,7 +97,7 @@ export async function GET(req: Request) {
     }
 
     // Process trends data
-    const trendsByDay = {};
+    const trendsByDay: Record<string, { total: number; go: number; noGo: number }> = {};
     if (ideaTrends) {
       ideaTrends.forEach(idea => {
         const day = new Date(idea.created_at).toISOString().split('T')[0];
