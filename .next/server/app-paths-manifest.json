@@ -1,7 +1,21 @@
 {
-  "/page": "app/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/secrets/page": "app/admin/secrets/page.js",
+  "/api/admin/secrets/page": "app/api/admin/secrets/page.js",
+  "/api/admin/sync-secrets/route": "app/api/admin/sync-secrets/route.js",
+  "/api/analyze-idea/route": "app/api/analyze-idea/route.js",
+  "/api/dashboard/route": "app/api/dashboard/route.js",
+  "/api/deploy-venture/route": "app/api/deploy-venture/route.js",
+  "/api/ideas/route": "app/api/ideas/route.js",
+  "/api/templates/route": "app/api/templates/route.js",
+  "/api/ventures/route": "app/api/ventures/route.js",
+  "/auth/callback/route": "app/auth/callback/route.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/vault/page": "app/vault/page.js",
   "/keymaster/page": "app/keymaster/page.js",
-  "/neural/page": "app/neural/page.js"
+  "/login/page": "app/login/page.js",
+  "/neural/page": "app/neural/page.js",
+  "/page": "app/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/vault/page": "app/vault/page.js"
 }

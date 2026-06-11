@@ -1,0 +1,164 @@
+{
+  "sessions": [
+    {
+      "id": "e6f628e6",
+      "created_at": "2026-05-14T02:05:26.145060902Z",
+      "updated_at": "2026-05-14T02:23:56.229954828Z",
+      "model": "gemini-2.5-flash",
+      "summary": "# You are the Team Leader\n\n## Your Role\nYou coordinate a team of AI agents. Y...",
+      "message_count": 158
+    },
+    {
+      "id": "ec751f23",
+      "created_at": "2026-05-14T02:11:19.250656134Z",
+      "updated_at": "2026-05-14T02:23:58.607475663Z",
+      "model": "qwen3.6-27b",
+      "summary": "[From Leader] The team leader has requested you to shut down. Reply \"shutdown...",
+      "message_count": 116
+    },
+    {
+      "id": "8776eaa8",
+      "created_at": "2026-05-14T02:11:19.314778341Z",
+      "updated_at": "2026-05-14T02:11:19.314779124Z",
+      "model": "sonnet[1m]",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "f4d3692a",
+      "created_at": "2026-05-14T02:11:19.402959381Z",
+      "updated_at": "2026-05-14T02:11:19.402959781Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "2f4a884f",
+      "created_at": "2026-05-14T02:11:23.293855737Z",
+      "updated_at": "2026-05-14T02:11:23.293856030Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "80c4b380",
+      "created_at": "2026-05-14T02:11:23.373379231Z",
+      "updated_at": "2026-05-14T02:11:23.373379672Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "e9457ec1",
+      "created_at": "2026-05-14T02:11:26.965106873Z",
+      "updated_at": "2026-05-14T02:11:26.965107083Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "9727ff6e",
+      "created_at": "2026-05-14T02:16:54.566768084Z",
+      "updated_at": "2026-05-14T02:16:54.566768567Z",
+      "model": "sonnet[1m]",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "134b1332",
+      "created_at": "2026-05-14T02:16:59.378468024Z",
+      "updated_at": "2026-05-14T02:16:59.378468398Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "58f9b08b",
+      "created_at": "2026-05-14T02:17:12.943845376Z",
+      "updated_at": "2026-05-14T02:17:12.943845831Z",
+      "model": "sonnet[1m]",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "45c8d5e6",
+      "created_at": "2026-05-14T02:17:18.115120017Z",
+      "updated_at": "2026-05-14T02:17:18.115120604Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "0ffa5e54",
+      "created_at": "2026-05-14T02:18:05.293812805Z",
+      "updated_at": "2026-05-14T02:18:05.293813150Z",
+      "model": "sonnet[1m]",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "45e1eaff",
+      "created_at": "2026-05-14T02:18:16.218742232Z",
+      "updated_at": "2026-05-14T02:18:16.218742530Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "c8f4ba84",
+      "created_at": "2026-05-14T02:18:55.885048037Z",
+      "updated_at": "2026-05-14T02:18:55.885048314Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "f618a684",
+      "created_at": "2026-05-14T03:02:22.548997412Z",
+      "updated_at": "2026-05-14T03:02:22.548998291Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "5f40c8a3",
+      "created_at": "2026-05-14T11:40:04.205496247Z",
+      "updated_at": "2026-05-14T11:40:04.205496944Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "e4d2ed8c",
+      "created_at": "2026-05-15T01:56:26.255898296Z",
+      "updated_at": "2026-05-15T01:56:26.255899695Z",
+      "model": "qwen3.6-27b",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "664e7c63",
+      "created_at": "2026-05-16T19:33:49.473268841Z",
+      "updated_at": "2026-05-16T19:33:49.473270303Z",
+      "model": "deepseek-v4-pro",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "ddf5ec3b",
+      "created_at": "2026-05-19T01:52:36.847237829Z",
+      "updated_at": "2026-05-19T01:52:36.847239036Z",
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "summary": "",
+      "message_count": 0
+    },
+    {
+      "id": "00347a4c",
+      "created_at": "2026-05-19T02:07:11.001998347Z",
+      "updated_at": "2026-05-19T02:07:11.001999779Z",
+      "model": "zai-glm-4.7",
+      "summary": "",
+      "message_count": 0
+    }
+  ]
+}

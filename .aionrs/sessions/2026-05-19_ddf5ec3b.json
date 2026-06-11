@@ -1,0 +1,15 @@
+{
+  "id": "ddf5ec3b",
+  "created_at": "2026-05-19T01:52:36.847237829Z",
+  "updated_at": "2026-05-19T01:52:36.847239036Z",
+  "provider": "openai",
+  "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+  "cwd": "/home/mo/boss-factory",
+  "total_usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0
+  },
+  "messages": []
+}

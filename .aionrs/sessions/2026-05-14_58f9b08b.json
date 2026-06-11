@@ -1,0 +1,15 @@
+{
+  "id": "58f9b08b",
+  "created_at": "2026-05-14T02:17:12.943845376Z",
+  "updated_at": "2026-05-14T02:17:12.943845831Z",
+  "provider": "openai",
+  "model": "sonnet[1m]",
+  "cwd": "/home/mo/boss-factory",
+  "total_usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0
+  },
+  "messages": []
+}

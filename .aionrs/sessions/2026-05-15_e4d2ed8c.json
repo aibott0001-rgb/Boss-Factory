@@ -1,0 +1,15 @@
+{
+  "id": "e4d2ed8c",
+  "created_at": "2026-05-15T01:56:26.255898296Z",
+  "updated_at": "2026-05-15T01:56:26.255899695Z",
+  "provider": "openai",
+  "model": "qwen3.6-27b",
+  "cwd": "/home/mo/boss-factory",
+  "total_usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0
+  },
+  "messages": []
+}
